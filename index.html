@@ -131,6 +131,9 @@ h3{font-family:var(--f-display);font-weight:600;font-size:18px;margin:0;letter-s
 
 /* games */
 .games-intro{color:var(--muted);max-width:36em;margin:-24px 0 44px}
+.itch-embed{margin-top:36px;display:flex;flex-direction:column;gap:12px;align-items:flex-start}
+.itch-lbl{font-family:var(--f-mono);font-size:13px;color:var(--muted);letter-spacing:.04em}
+.itch-embed iframe{width:100%;max-width:556px;height:171px;border:0;border-radius:6px;display:block}
 .games{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
 .game{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;position:relative;transition:transform .4s cubic-bezier(.2,.7,.2,1),border-color .3s;transform-style:preserve-3d;min-width:0}
 .game:hover{border-color:#4a4a52}
@@ -360,6 +363,10 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px;
           </div>
         </article>
       </div>
+      <div class="itch-embed">
+        <span class="itch-lbl" data-i18n="itch_lbl">› страница игры на itch.io</span>
+        <iframe frameborder="0" src="https://itch.io/embed/5343017?border_width=3&amp;bg_color=0e120f&amp;fg_color=e9f2e5&amp;link_color=0f4822&amp;border_color=0a3912" width="556" height="171" loading="lazy" title="Area Restricted: The Vault — itch.io"><a href="https://sawilove.itch.io/area-restricted-the-vault">Area Restricted: The Vault by sawilove</a></iframe>
+      </div>
     </div>
   </section>
 
@@ -458,7 +465,7 @@ const EN = {
   sig1:'TEASER', sig2:'PROTOTYPE.EXE', sig3:'COMING SOON',
   st1:'● in development · 2027', st2:'◐ prototype', st3:'○ idea',
   g1:'A VHS horror about an operative\'s shift in the underground vault of SHEOL Corporation. The quota is mandatory. Do not turn around without need.',
-  t_horror:'horror', teaser_lbl:'teaser', close:'close', teaser_aria:'Watch the Area Restricted: The Vault teaser',
+  t_horror:'horror', teaser_lbl:'teaser', close:'close', teaser_aria:'Watch the Area Restricted: The Vault teaser', itch_lbl:'› game page on itch.io',
   g2:'An experimental mechanic. We are testing whether the idea works the way it feels.',
   g3:'Still living in a notebook and in our heads. We will share it when there is something to show.',
   t_story:'story', t_atm:'atmosphere', t_exp:'experiment', t_secret:'secret',
