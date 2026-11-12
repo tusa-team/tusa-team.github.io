@@ -241,6 +241,24 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px;
 .teaser-modal .bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-family:var(--f-mono);font-size:12px;color:var(--muted);letter-spacing:.08em}
 .teaser-modal .close{background:none;border:1px solid var(--line);color:var(--fg);font:inherit;padding:6px 12px;border-radius:8px;cursor:pointer}
 .teaser-modal .close:hover{border-color:var(--fg)}
+/* скачать: язычок в правом нижнем углу видео; наведение (или тап) выдвигает виджет itch.io */
+.teaser-modal .dl{position:absolute;right:14px;bottom:62px;display:flex;flex-direction:row-reverse;align-items:center;gap:10px;z-index:2}
+.teaser-modal .dl-tab{display:flex;align-items:center;gap:8px;background:rgba(10,14,12,.82);border:1px solid #1d5a30;color:#e9f2e5;font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;padding:9px 12px;border-radius:8px;cursor:pointer;backdrop-filter:blur(4px);transition:border-color .2s,background .2s}
+.teaser-modal .dl-tab i{width:7px;height:7px;border-radius:50%;background:#3fbf6a;box-shadow:0 0 8px #3fbf6a;animation:dlpulse 1.6s ease-in-out infinite}
+.teaser-modal .dl-tab b{font-weight:400}
+@keyframes dlpulse{50%{opacity:.25}}
+.teaser-modal .dl-card{width:0;height:171px;overflow:hidden;opacity:0;transform:translateX(12px);transition:width .45s cubic-bezier(.2,.7,.2,1),opacity .3s,transform .45s cubic-bezier(.2,.7,.2,1);border-radius:6px;box-shadow:0 10px 40px rgba(0,0,0,.6)}
+.teaser-modal .dl-card iframe{width:556px;height:171px;border:0;display:block}
+.teaser-modal .dl:hover .dl-card,.teaser-modal .dl.open .dl-card,.teaser-modal .dl:focus-within .dl-card{width:min(556px,calc(100vw - 8vmin - 170px));opacity:1;transform:none}
+.teaser-modal .dl:hover .dl-tab,.teaser-modal .dl.open .dl-tab{border-color:#3fbf6a;background:rgba(14,30,20,.92)}
+@media (max-width:640px){
+  .teaser-modal .dl{position:static;flex-direction:column;align-items:stretch;margin-top:10px}
+  .teaser-modal .dl-tab{justify-content:center}
+  .teaser-modal .dl-card{width:100%;height:0;transform:none}
+  .teaser-modal .dl.open .dl-card,.teaser-modal .dl:focus-within .dl-card{width:100%;height:171px}
+  .teaser-modal .dl-card iframe{width:100%}
+}
+@media (prefers-reduced-motion:reduce){.teaser-modal .dl-card{transition:none}.teaser-modal .dl-tab i{animation:none}}
 </style>
 </head>
 <body>
@@ -438,6 +456,10 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px;
   <div class="box">
     <div class="bar"><span>AREA RESTRICTED: THE VAULT · <span data-i18n="teaser_lbl">тизер</span> · 2027</span><button class="close" type="button" id="teaserClose" data-i18n="close">закрыть</button></div>
     <video id="teaserVideo" controls playsinline preload="none" poster="media/vault_poster.jpg"></video>
+    <div class="dl" id="teaserDl">
+      <button class="dl-tab" type="button" id="teaserDlTab" aria-expanded="false" aria-controls="teaserDlCard"><i aria-hidden="true"></i><span data-i18n="dl_tab">скачать игру</span> <b aria-hidden="true">⤓</b></button>
+      <div class="dl-card" id="teaserDlCard"><iframe data-src="https://itch.io/embed/5343017?border_width=3&amp;bg_color=0e120f&amp;fg_color=e9f2e5&amp;link_color=0f4822&amp;border_color=0a3912" width="556" height="171" title="Area Restricted: The Vault — itch.io"></iframe></div>
+    </div>
   </div>
 </div>
 
@@ -465,7 +487,7 @@ const EN = {
   sig1:'TEASER', sig2:'PROTOTYPE.EXE', sig3:'COMING SOON',
   st1:'● in development · 2027', st2:'◐ prototype', st3:'○ idea',
   g1:'A VHS horror about an operative\'s shift in the underground vault of SHEOL Corporation. The quota is mandatory. Do not turn around without need.',
-  t_horror:'horror', teaser_lbl:'teaser', close:'close', teaser_aria:'Watch the Area Restricted: The Vault teaser', itch_lbl:'› game page on itch.io',
+  t_horror:'horror', teaser_lbl:'teaser', close:'close', teaser_aria:'Watch the Area Restricted: The Vault teaser', itch_lbl:'› game page on itch.io', dl_tab:'download game',
   g2:'An experimental mechanic. We are testing whether the idea works the way it feels.',
   g3:'Still living in a notebook and in our heads. We will share it when there is something to show.',
   t_story:'story', t_atm:'atmosphere', t_exp:'experiment', t_secret:'secret',
@@ -578,7 +600,15 @@ function openTeaser(){
   video.currentTime = 0;
   video.play().catch(() => {});
 }
+const dl = document.getElementById('teaserDl'), dlTab = document.getElementById('teaserDlTab'), dlFrame = dl.querySelector('iframe');
+function dlLoad(){ if (!dlFrame.src) dlFrame.src = dlFrame.dataset.src; }   // виджет грузится только когда нужен
+function dlSet(open){ dlLoad(); dl.classList.toggle('open', open); dlTab.setAttribute('aria-expanded', open); }
+dl.addEventListener('mouseenter', dlLoad);
+dlTab.addEventListener('focus', dlLoad);
+dlTab.addEventListener('click', () => dlSet(!dl.classList.contains('open')));
+video.addEventListener('ended', () => dlSet(true));               // досмотрел тизер — сразу предлагаем скачать
 function closeTeaser(){
+  dlSet(false);
   video.pause();
   modal.hidden = true;
   document.body.style.overflow = '';
